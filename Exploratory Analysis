@@ -1,0 +1,134 @@
+
+import pandas as pd
+import numpy as np
+df = pd.read_csv('/Users/joegriffin/Downloads/diabetes.csv')
+pd.set_option('display.max_columns', None)
+#print(df.head())
+#print(df.columns)
+#print(len(df))
+#print("^df length")
+
+
+#Make dfs without null values
+#pregnancies
+preg_df=df.loc[df.Outcome != 10, ["Pregnancies", "Outcome"]]
+gluc_df=df.loc[df.Glucose != 0, ["Glucose", "Outcome"]]
+bp_df=df.loc[df.BloodPressure != 0, ["BloodPressure", "Outcome"]]
+skin_df=df.loc[df.SkinThickness != 0, ["SkinThickness", "Outcome"]]
+ins_df=df.loc[df.Insulin != 0, ["Insulin", "Outcome"]]
+bmi_df=df.loc[df.BMI != 0, ["BMI", "Outcome"]]
+func_df=df.loc[df.DiabetesPedigreeFunction != 0, ["DiabetesPedigreeFunction", "Outcome"]]
+age_df=df.loc[df.Age != 0, ["Age", "Outcome"]]
+
+
+
+
+#################
+
+#build comparative plots
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn import preprocessing
+from sklearn.model_selection import train_test_split
+
+selected_columns = df[['Outcome']]
+new_df = selected_columns.copy()
+colors = np.where(new_df['Outcome']==0,'r','-')
+colors[new_df['Outcome']==1] = 'b'
+
+from pandas.plotting import scatter_matrix
+scatter_matrix(df.iloc[:768], alpha=0.7, figsize=(20,20), c=colors, diagonal='kde');
+print("Male=red")
+print("Female=green")
+print("Infant=blue")
+#plt.show(block=True)
+plt.interactive(False)
+
+##################
+
+#build averages table
+
+from tabulate import tabulate
+
+
+def Average(x):
+    return round((sum(x) / len(x)), 2)
+
+def Diff(x, y):
+    return x-y
+
+def Pct_Chg(x, y):
+    return round(((x-y) / y * 100 + 100), 2)
+
+y_preg_df=preg_df.loc[preg_df.Outcome == 1, ["Pregnancies", "Outcome"]]
+n_preg_df=preg_df.loc[preg_df.Outcome == 0, ["Pregnancies", "Outcome"]]
+
+y_skin_df=skin_df.loc[skin_df.Outcome == 1, ["SkinThickness", "Outcome"]]
+n_skin_df=skin_df.loc[skin_df.Outcome == 0, ["SkinThickness", "Outcome"]]
+
+y_ins_df=ins_df.loc[ins_df.Outcome == 1, ["Insulin", "Outcome"]]
+n_ins_df=ins_df.loc[ins_df.Outcome == 0, ["Insulin", "Outcome"]]
+
+y_bmi_df=bmi_df.loc[bmi_df.Outcome == 1, ["BMI", "Outcome"]]
+n_bmi_df=bmi_df.loc[bmi_df.Outcome == 0, ["BMI", "Outcome"]]
+
+y_func_df=func_df.loc[func_df.Outcome == 1, ["DiabetesPedigreeFunction", "Outcome"]]
+n_func_df=func_df.loc[func_df.Outcome == 0, ["DiabetesPedigreeFunction", "Outcome"]]
+
+y_age_df=age_df.loc[age_df.Outcome == 1, ["Age", "Outcome"]]
+n_age_df=age_df.loc[age_df.Outcome == 0, ["Age", "Outcome"]]
+
+y_gluc_df=gluc_df.loc[gluc_df.Outcome == 1, ["Glucose", "Outcome"]]
+n_gluc_df=gluc_df.loc[gluc_df.Outcome == 0, ["Glucose", "Outcome"]]
+
+y_bp_df=bp_df.loc[bp_df.Outcome == 1, ["BloodPressure", "Outcome"]]
+n_bp_df=bp_df.loc[bp_df.Outcome == 0, ["BloodPressure", "Outcome"]]
+
+preg_ave = Average(preg_df.Pregnancies)
+y_preg_ave = Average(y_preg_df.Pregnancies)
+n_preg_ave = Average(n_preg_df.Pregnancies)
+
+skin_ave = Average(skin_df.SkinThickness)
+y_skin_ave = Average(y_skin_df.SkinThickness)
+n_skin_ave = Average(n_skin_df.SkinThickness)
+
+ins_ave = Average(ins_df.Insulin)
+y_ins_ave = Average(y_ins_df.Insulin)
+n_ins_ave = Average(n_ins_df.Insulin)
+
+bmi_ave = Average(bmi_df.BMI)
+y_bmi_ave = Average(y_bmi_df.BMI)
+n_bmi_ave = Average(n_bmi_df.BMI)
+
+func_ave = Average(func_df.DiabetesPedigreeFunction)
+y_func_ave = Average(y_func_df.DiabetesPedigreeFunction)
+n_func_ave = Average(n_func_df.DiabetesPedigreeFunction)
+
+age_ave = Average(age_df.Age)
+y_age_ave = Average(y_age_df.Age)
+n_age_ave = Average(n_age_df.Age)
+
+gluc_ave = Average(gluc_df.Glucose)
+y_gluc_ave = Average(y_gluc_df.Glucose)
+n_gluc_ave = Average(n_gluc_df.Glucose)
+
+bp_ave = Average(bp_df.BloodPressure)
+y_bp_ave = Average(y_bp_df.BloodPressure)
+n_bp_ave = Average(n_bp_df.BloodPressure)
+
+
+#print(tabulate(data, headers=col_names, tablefmt="fancy_grid"))
+
+table = [[' ', 'All Data', 'With Diabetes', 'Without Diabetes', 'Percent Change'],
+         ['Pregnancies', preg_ave, y_preg_ave, n_preg_ave, Pct_Chg(y_preg_ave, n_preg_ave)],
+         ['Skin Thickness (mm)', skin_ave, y_skin_ave, n_skin_ave, Pct_Chg(y_skin_ave, n_skin_ave)],
+         ['Insulin (mu U/ml)', ins_ave, y_ins_ave, n_ins_ave, Pct_Chg(y_ins_ave, n_ins_ave)],
+         ['BMI', bmi_ave, y_bmi_ave, n_bmi_ave, Pct_Chg(y_bmi_ave, n_bmi_ave)],
+         ['Diabetes Pedigree Function', func_ave, y_func_ave, n_func_ave, Pct_Chg(y_func_ave, n_func_ave)],
+         ['Age', age_ave, y_age_ave, n_age_ave, Pct_Chg(y_age_ave, n_age_ave)],
+         ['Glucose (mm Hg)', gluc_ave, y_gluc_ave, n_gluc_ave, Pct_Chg(y_gluc_ave, n_gluc_ave)],
+         ['Blood Pressure', bp_ave, y_bp_ave, n_bp_ave, Pct_Chg(y_bp_ave, n_bp_ave)]]
+
+print(tabulate(table, headers='firstrow', tablefmt='fancy_grid'))
